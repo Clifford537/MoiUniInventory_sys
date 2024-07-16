@@ -11,6 +11,8 @@ def register_view(request):
             user = form.save()
             login(request, user)
             return redirect('login')
+        else:
+            print(form.errors)  # Debug: print form errors to console
     else:
         form = RegisterForm()
     return render(request, 'register.html', {'form': form})
