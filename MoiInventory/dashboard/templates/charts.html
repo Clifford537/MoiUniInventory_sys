@@ -7,18 +7,34 @@
     <!-- Include your charting library's CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 0;
-            background-color: #f8f9fa; /* Light gray background */
-        }
         header {
-            background-color: #35424a;
+            background: #35424a;
             color: #ffffff;
-            padding: 20px;
+            padding: 10px 0;
+            border-bottom: #e8491d 3px solid;
             text-align: center;
-            border-bottom: 3px solid #e8491d;
+            position: relative;
+        }
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #0c0b0b;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .back-btn:hover {
+            background-color: #c73d17;
+        }
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
         .container {
             max-width: 900px;
@@ -29,7 +45,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Light shadow */
         }
         h1, h2 {
-            margin-top: 20px;
+            margin-top: 2px;
             color: #fbfdff; /* Dark text color */
         }
         .row {
@@ -63,6 +79,7 @@
 </head>
 <body>
     <header>
+        <button class="back-btn" onclick="window.location.href='{% url 'dashboard' %}'">Back to Dashboard</button>
         <h1>Analysis Dashboard</h1>
     </header>
     <div class="container">
