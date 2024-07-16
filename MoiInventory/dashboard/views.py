@@ -2,12 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Product, Transaction, Store
 from .forms import ProductForm, TransactionForm, StoreForm
-from django.db.models import Q
+from django.db.models import Q, Sum, Count
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 @login_required
 def dashboard_view(request):
-    products = Product.objects.all()
-    transactions = Transaction.objects.all()
+    products = Product.objects.order_by('-date')[:15]
+    transactions = Transaction.objects.order_by('-date')[:15]
     stores = Store.objects.all()
     return render(request, 'dashboard.html', {
         'products': products,
@@ -68,7 +69,7 @@ def manage_items_view(request):
             Q(item_name__icontains=query) |
             Q(item_description__icontains=query) |
             Q(remarks__icontains=query)
-        ).distinct()  # Adjust to include other searchable fields
+        ).distinct()
     
     if store_id:
         products = products.filter(store_id=store_id)
@@ -76,12 +77,30 @@ def manage_items_view(request):
     if date_added:
         products = products.filter(date=date_added)
     
+    paginator = Paginator(products, 30)  # Show 30 products per page
+    page = request.GET.get('page')
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+    except EmptyPage:
+        products = paginator.page(paginator.num_pages)
+    
     stores = Store.objects.all()
+    
+    total_quantity = Product.objects.aggregate(Sum('quantity'))['quantity__sum'] or 0
+    total_price = Product.objects.aggregate(Sum('total_price'))['total_price__sum'] or 0
+    
     context = {
         'products': products,
         'stores': stores,
+        'total_quantity': total_quantity,
+        'total_price': total_price,
     }
     return render(request, 'manage_items.html', context)
+
+
+
 @login_required
 def manage_stores_view(request):
     stores = Store.objects.all()
@@ -122,3 +141,57 @@ def delete_store_view(request, store_id):
     store = get_object_or_404(Store, id=store_id)
     store.delete()
     return redirect('manage_stores')
+
+def product_movement_view(request):
+    # Retrieve transactions and optionally filter by date and time
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    start_time = request.GET.get('start_time')
+    end_time = request.GET.get('end_time')
+
+    transactions = Transaction.objects.all()
+
+    if start_date:
+        transactions = transactions.filter(date__gte=start_date)
+    if end_date:
+        transactions = transactions.filter(date__lte=end_date)
+    if start_time:
+        transactions = transactions.filter(time__gte=start_time)
+    if end_time:
+        transactions = transactions.filter(time__lte=end_time)
+
+    transactions = transactions.order_by('-date')[:15]  # Limit to 15 most recent
+
+    return render(request, 'product_movement.html', {'transactions': transactions})
+
+@login_required
+def charts_view(request):
+    products = Product.objects.all()
+    broken_goods_count = products.filter(remarks__icontains='broken').count()
+    available_products_count = products.exclude(remarks__icontains='broken').count()
+
+    product_names = [product.item_name for product in products]
+    product_quantities = [product.quantity for product in products]
+
+    stores = Store.objects.annotate(total_products=Count('products'))
+    store_names = [store.name for store in stores]
+    store_product_counts = [store.total_products for store in stores]
+
+    total_product_quantity = Product.objects.aggregate(Sum('quantity'))['quantity__sum'] or 0
+    total_product_amount = Product.objects.aggregate(Sum('total_price'))['total_price__sum'] or 0
+    total_product_amount = '{:,.3f}'.format(total_product_amount)  # Format with two decimal places and thousands separator
+
+    context = {
+        'product_names': product_names,
+        'product_quantities': product_quantities,
+        'store_names': store_names,
+        'store_product_counts': store_product_counts,
+        'total_product_quantity': total_product_quantity,
+        'total_product_amount': total_product_amount,
+        'broken_goods_count': broken_goods_count,
+        'available_products_count': available_products_count,
+    }
+
+    return render(request, 'charts.html', context)
+
+

@@ -21,4 +21,12 @@ class TransactionForm(forms.ModelForm):
 
     class Meta:
         model = Transaction
-        fields = ['product', 'transaction_type', 'quantity', 'remarks']
+        fields = ['product', 'transaction_type', 'quantity', 'remarks', 'broken_quantity']
+        widgets = {
+            'transaction_type': forms.Select(attrs={'onchange': 'toggleFields()'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(TransactionForm, self).__init__(*args, **kwargs)
+        self.fields['broken_quantity'].required = False
+        self.fields['broken_quantity'].widget.attrs.update({'class': 'conditional-field'})

@@ -25,12 +25,20 @@ class Product(models.Model):
     def __str__(self):
         return f'{self.item_name} ({self.store.name})'
 
+from datetime import datetime
+
 class Transaction(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     transaction_type = models.CharField(max_length=50)  # 'issue' or 'receive'
     quantity = models.PositiveIntegerField()
+    broken_quantity = models.PositiveIntegerField(null=True, blank=True)
+    time = models.TimeField(auto_now_add=True)
     date = models.DateField(auto_now_add=True)
     remarks = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f'{self.transaction_type} - {self.product.item_name} ({self.quantity})'
+
+    @property
+    def good_condition_quantity(self):
+        return self.quantity - (self.broken_quantity or 0)

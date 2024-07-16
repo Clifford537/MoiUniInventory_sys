@@ -34,15 +34,7 @@
             margin-bottom: 8px;
             font-weight: bold;
         }
-        form input[type="text"], form input[type="number"], form textarea {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        form select {
+        form input[type="text"], form input[type="number"], form textarea, form select {
             width: 100%;
             padding: 8px;
             margin-bottom: 12px;
@@ -71,7 +63,26 @@
         a:hover {
             text-decoration: underline;
         }
+        .conditional-fields {
+            display: none;
+        }
     </style>
+    <script>
+        function toggleFields() {
+            var transactionType = document.getElementById('id_transaction_type').value;
+            var conditionalFields = document.querySelector('.conditional-fields');
+            if (transactionType === 'receive') {
+                conditionalFields.style.display = 'block';
+            } else {
+                conditionalFields.style.display = 'none';
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            var transactionTypeSelect = document.getElementById('id_transaction_type');
+            transactionTypeSelect.addEventListener('change', toggleFields);
+            toggleFields();  // Ensure fields are correctly displayed on page load
+        });
+    </script>
 </head>
 <body>
     <header>
@@ -86,6 +97,10 @@
             {{ form.transaction_type }}
             <label for="id_quantity">Quantity:</label>
             {{ form.quantity }}
+            <div class="conditional-fields">
+                <label for="id_broken_quantity">Broken Quantity:</label>
+                {{ form.broken_quantity }}
+            </div>
             <label for="id_remarks">Remarks:</label>
             {{ form.remarks }}
             <button type="submit">Submit</button>

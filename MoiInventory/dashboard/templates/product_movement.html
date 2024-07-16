@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Movement</title>
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 95%;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding: 10px 0;
+            border-bottom: #e8491d 3px solid;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        nav {
+            text-align: right;
+        }
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+        nav a:hover {
+            color: #e8491d;
+        }
+        .content {
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        form label {
+            margin-right: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid #dddddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #35424a;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Product Movement</h1>
+            <nav>
+                <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        <div class="content">
+            <h2>Product Movement Details</h2>
+            <form method="get">
+                <label for="id_start_date">Start Date:</label>
+                <input type="date" id="id_start_date" name="start_date">
+                <label for="id_end_date">End Date:</label>
+                <input type="date" id="id_end_date" name="end_date">
+                <label for="id_start_time">Start Time:</label>
+                <input type="time" id="id_start_time" name="start_time">
+                <label for="id_end_time">End Time:</label>
+                <input type="time" id="id_end_time" name="end_time">
+                <button type="submit">Filter</button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Type</th>
+                        <th>Quantity</th>
+                        <th>Broken Quantity</th>
+                        <th>Good Condition Quantity</th>
+                        <th>Time</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.product.item_name }}</td>
+                        <td>{{ transaction.transaction_type }}</td>
+                        <td>{{ transaction.quantity }}</td>
+                        <td>{{ transaction.broken_quantity }}</td>
+                        <td>{{ transaction.good_condition_quantity }}</td>
+                        <td>{{ transaction.time }}</td>
+                        <td>{{ transaction.date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

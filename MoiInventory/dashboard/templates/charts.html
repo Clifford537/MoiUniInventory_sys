@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Dashboard</title>
+    <!-- Include your charting library's CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f8f9fa; /* Light gray background */
+        }
+        header {
+            background-color: #35424a;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #e8491d;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #ffffff; /* White container background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Light shadow */
+        }
+        h1, h2 {
+            margin-top: 20px;
+            color: #fbfdff; /* Dark text color */
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .column {
+            flex: 0 0 calc(50% - 20px);
+            max-width: calc(50% - 20px);
+            margin: 10px;
+        }
+        .chart-container {
+            text-align: center;
+        }
+        .analysis-table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .analysis-table th, .analysis-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6; /* Light border color */
+        }
+        .analysis-table th {
+            background-color: #f2f2f2; /* Light gray header background */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Analysis Dashboard</h1>
+    </header>
+    <div class="container">
+        <!-- Analysis Table -->
+        <table class="analysis-table">
+            <thead>
+                <tr>
+                    <th>Total Product Quantity</th>
+                    <th>Total Product Amount (Kes)</th>
+                    <th>Number of Broken products</th>
+                    <th>Number of Available Products</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ total_product_quantity }}</td>
+                    <td>{{ total_product_amount }}</td>
+                    <td>{{ broken_goods_count }}</td>
+                    <td>{{ available_products_count }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Charts Row -->
+        <div class="row">
+            <!-- Bar Chart -->
+            <div class="column">
+                <h2>Product Movement</h2>
+                <div class="chart-container">
+                    <canvas id="productMovementChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Pie Chart -->
+            <div class="column">
+                <h2>Store and Product Distribution</h2>
+                <div class="chart-container">
+                    <canvas id="storeProductDistributionChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Pie Chart -->
+        <div class="row">
+            <div class="column">
+                <h2>Broken Goods vs Available Products</h2>
+                <div class="chart-container">
+                    <canvas id="brokenVsAvailableChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include your charting library's JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script>
+        // Example: Initialize and populate Product Movement Bar Chart
+        var ctx1 = document.getElementById('productMovementChart').getContext('2d');
+        var productNames = {{ product_names|safe }};
+        var productQuantities = {{ product_quantities|safe }};
+
+        var productMovementChart = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: productNames,
+                datasets: [{
+                    label: 'Product Quantity',
+                    data: productQuantities,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Example: Initialize and populate Store and Product Distribution Pie Chart
+        var ctx2 = document.getElementById('storeProductDistributionChart').getContext('2d');
+        var storeNames = {{ store_names|safe }};
+        var storeProductCounts = {{ store_product_counts|safe }};
+
+        var storeProductDistributionChart = new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: storeNames,
+                datasets: [{
+                    label: 'Store Product Distribution',
+                    data: storeProductCounts,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Example: Initialize and populate Broken Goods vs Available Products Pie Chart
+        var ctx3 = document.getElementById('brokenVsAvailableChart').getContext('2d');
+        var brokenVsAvailableData = [{{ broken_goods_count }}, {{ available_products_count }}];
+        var brokenVsAvailableChart = new Chart(ctx3, {
+            type: 'pie',
+            data: {
+                labels: ['Broken Goods', 'Available Products'],
+                datasets: [{
+                    label: 'Broken Goods vs Available Products',
+                    data: brokenVsAvailableData,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

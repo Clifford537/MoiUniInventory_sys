@@ -144,6 +144,31 @@
         .filter-form button:hover {
             background-color: #c0a011;
         }
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+        .pagination a {
+            color: #c26e29;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+            margin: 0 5px;
+            border-radius: 5px;
+        }
+
+        .pagination a:hover {
+            background-color: #30393f;
+            color: #fff;
+        }
+
+        .pagination .active {
+            background-color: #db7530;
+            color: #fff;
+            padding: 8px 16px;
+            margin: 0 5px;
+        }
     </style>
 </head>
 <body>
@@ -206,8 +231,34 @@
                     </td>
                 </tr>
                 {% endfor %}
+                <!-- Total rows -->
+                <tr>
+                    <td colspan="4"></td>
+                    <td><strong>{{ total_quantity }}</strong></td>
+                    <td><strong>{{ total_price }}</strong></td>
+                    <td colspan="3"></td>
+                </tr>
             </tbody>
         </table>
+        <div class="pagination">
+            {% if products.has_previous %}
+                <a href="?page=1" class="page-link">&laquo; First</a>
+                <a href="?page={{ products.previous_page_number }}" class="page-link">Previous</a>
+            {% endif %}
+            
+            {% for num in products.paginator.page_range %}
+                {% if products.number == num %}
+                    <a href="#" class="page-link active">{{ num }}</a>
+                {% else %}
+                    <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}" class="page-link">Next</a>
+                <a href="?page={{ products.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+            {% endif %}
+        </div> 
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
@@ -219,12 +270,6 @@
             altInput: true,
             altFormat: "F j, Y",
         });
-
-        // Function to filter by newest
-        function filterByNewest() {
-            var url = window.location.href.split('?')[0]; // Get current URL without query string
-            window.location.href = url + '?sort=newest'; // Append sort parameter for newest
-        }
     </script>
 </body>
 </html>
