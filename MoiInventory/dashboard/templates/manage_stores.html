@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Stores</title>
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #35424a;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #e8491d;
+        }
+        .container {
+            margin: 20px auto;
+            max-width: 1000px; /* Set maximum width for the container */
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin: 0;
+            padding: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse; /* Remove spacing between borders */
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #dddddd;
+        }
+        th {
+            background-color: #35424a;
+            color: #ffffff;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2; /* Light grey background for even rows */
+        }
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3; /* Darken on hover */
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: #ffffff;
+        }
+        .btn-danger:hover {
+            background-color: #c82333; /* Darken on hover */
+        }
+        .btn-back {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 15px;
+            background-color: #35424a;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s; 
+            max-width: 170px;
+        }
+        .btn-back:hover {
+            background-color: #e8491d; /* Change color on hover */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Manage Stores</h1>
+    </header>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Store Name</th>
+                    <th>Location</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for store in stores %}
+                <tr>
+                    <td>{{ store.name }}</td>
+                    <td>{{ store.location }}</td>
+                    <td>
+                        <a href="{% url 'edit_store' store.id %}" class="btn btn-primary">Edit</a>
+                        <a href="{% url 'delete_store' store.id %}" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'dashboard' %}" class="btn-back">Back to Dashboard</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding-top: 6px;
+            min-height: 70px;
+            border-bottom: #e8491d 3px solid;
+        }
+        header a {
+            color: #ffffff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        header ul {
+            padding: 0;
+            list-style: none;
+        }
+        header li {
+            display: inline;
+            padding: 0 20px 0 20px;
+        }
+        header .current a {
+            color: #e8491d;
+        }
+        header a:hover {
+            color: #cccccc;
+            font-weight: bold;
+        }
+        .register-form {
+            background: #ffffff;
+            padding: 20px;
+            margin: 50px auto;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px #000000;
+            max-width: 400px;
+        }
+        .register-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .register-form form {
+            display: flex;
+            flex-direction: column;
+        }
+        .register-form form label {
+            margin-bottom: 10px;
+            color: #35424a;
+            font-weight: bold;
+        }
+        .register-form form input[type="text"],
+        .register-form form input[type="password"],
+        .register-form form input[type="email"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .register-form form button {
+            padding: 10px;
+            background: #35424a;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%; /* Make the button width 100% */
+            max-width: 150px; /* Limit the maximum width of the button */
+            margin: auto; /* Center align the button */
+        }
+        .register-form form button:hover {
+            background: #e8491d;
+        }
+        .register-form .login-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .register-form .login-link a {
+            color: #5fa9d6;
+            text-decoration: none;
+        }
+        .register-form .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><a href="{% url 'dashboard' %}">Register </a></h1>
+            <ul>
+                <li><a href="{% url 'login' %}">Login</a></li>
+                <li class="current"><a href="{% url 'register' %}">Register</a></li>
+            </ul>
+        </div>
+    </header>
+    <div class="register-form">
+        <h2>Register</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label for="id_username">Username:</label>
+            {{ form.username }}
+            <label for="id_email">Email:</label>
+            {{ form.email }}
+            <label for="id_password1">Password:</label>
+            {{ form.password1 }}
+            <label for="id_password2">Confirm Password:</label>
+            {{ form.password2 }}
+            <button type="submit">Register</button>
+        </form>
+        <div class="login-link">
+            <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+        </div>
+    </div>
+</body>
+</html>

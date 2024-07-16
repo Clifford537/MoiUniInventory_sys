@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Items</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.css">
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #35424a;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #e8491d;
+        }
+        .container {
+            margin: 20px auto;
+            max-width: 1200px; /* Adjusted maximum width for the container */
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin: 0;
+            padding: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse; /* Remove spacing between borders */
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #dddddd;
+        }
+        th {
+            background-color: #35424a;
+            color: #ffffff;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2; /* Light grey background for even rows */
+        }
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3; /* Darken on hover */
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: #ffffff;
+        }
+        .btn-danger:hover {
+            background-color: #c82333; /* Darken on hover */
+        }
+        .btn-back {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 10px 15px;
+            width: auto; /* Adjusted width */
+            background-color: #35424a;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+        .btn-back:hover {
+            background-color: #e8491d; /* Change color on hover */
+        }
+        nav {
+            text-align: right; /* Align navigation to the right */
+            margin-bottom: 20px;
+        }
+        .search-filter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .search-form {
+            display: flex;
+            justify-content: center; /* Center the search form */
+            align-items: center;
+            flex: 1; /* Take remaining space */
+        }
+        .search-form form {
+            display: flex;
+        }
+        .search-form input[type="text"] {
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-width: 300px;
+        }
+        .search-form button {
+            padding: 8px 12px;
+            background-color: #587085;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .search-form button:hover {
+            background-color: #c1d7db8f;
+        }
+        .filter-form {
+            display: flex;
+            align-items: center;
+        }
+        .filter-form select {
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .filter-form button {
+            padding: 8px 12px;
+            background-color: #5c6f92;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .filter-form button:hover {
+            background-color: #c0a011;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Manage Items</h1>
+    </header>
+    <div class="container">
+        <nav>
+            <a href="{% url 'dashboard' %}" class="btn-back">Back to Dashboard</a>
+        </nav>
+        <div class="search-filter">
+            <div class="search-form">
+                <form method="get">
+                    <input type="text" name="q" placeholder="Search by item name, description, or remarks" value="{{ request.GET.q }}">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <div class="filter-form">
+                <form method="get">
+                    <select name="store">
+                        <option value="">Filter by Store</option>
+                        {% for store in stores %}
+                        <option value="{{ store.id }}" {% if store.id == request.GET.store %}selected{% endif %}>{{ store.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" id="datePicker" name="date_added" placeholder="Filter by Date Added" value="{{ request.GET.date_added }}">
+                    <button type="submit">Apply Filters</button>
+                    <button type="button" onclick="filterByNewest()">Filter by Newest</button>
+                </form>
+            </div>
+        </div>
+        <table id="productTable">
+            <thead>
+                <tr>
+                    <th>Store Name</th>
+                    <th>Item Name</th>
+                    <th>Description</th>
+                    <th>Unit Price</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th>
+                    <th>Remarks</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.store.name }}</td>
+                    <td>{{ product.item_name }}</td>
+                    <td>{{ product.item_description }}</td>
+                    <td>{{ product.unit_price }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.total_price }}</td>
+                    <td>{{ product.remarks }}</td>
+                    <td>{{ product.date }}</td>
+                    <td>
+                        <a href="{% url 'edit_product' product.id %}" class="btn btn-primary btn-sm">Edit</a>
+                        <a href="{% url 'delete_product' product.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
+    <script>
+        // Initialize flatpickr for date picker
+        flatpickr("#datePicker", {
+            dateFormat: "Y-m-d",
+            enableTime: false,
+            altInput: true,
+            altFormat: "F j, Y",
+        });
+
+        // Function to filter by newest
+        function filterByNewest() {
+            var url = window.location.href.split('?')[0]; // Get current URL without query string
+            window.location.href = url + '?sort=newest'; // Append sort parameter for newest
+        }
+    </script>
+</body>
+</html>

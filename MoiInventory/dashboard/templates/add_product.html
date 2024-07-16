@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #35424a;
+            color: #ffffff;
+            text-align: center;
+            padding: 3px;
+            border-bottom: 3px solid #e8491d;
+           
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            margin-top: 20px;
+        }
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        form input[type="text"],form input[type="number"], form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        form button {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        form button:hover {
+            background-color: #0056b3;
+        }
+        a {
+            display: inline-block;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>Add New Item</h2>
+    </header>
+    <div class="container">
+        <form method="post">
+            {% csrf_token %}
+            <label for="id_item_name">Item Name:</label>
+            {{ form.item_name }}
+            <label for="id_item_description">Description:</label>
+            {{ form.item_description }}
+            <label for="id_unit_price">Unit Price:</label>
+            {{ form.unit_price }}
+            <label for="id_quantity">Quantity:</label>
+            {{ form.quantity }}
+            <label for="id_remarks">Remarks:</label>
+            {{ form.remarks }}
+            <button type="submit">Add Product</button>
+        </form>
+        <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+    </div>
+</body>
+</html>

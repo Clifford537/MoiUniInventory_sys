@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding: 20px 0;
+            border-bottom: #e8491d 3px solid;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        nav {
+            float: right;
+        }
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            margin: 0 15px;
+            display: inline-block;
+        }
+        nav a:hover {
+            color: #e8491d;
+        }
+        .welcome, .products, .transactions, .stores {
+            margin-top: 20px;
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #dddddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #35424a;
+            color: white;
+        }
+        .row {
+            display: flex;
+            justify-content: space-between;
+        }
+        .column {
+            flex: 0 0 48%;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Inventory</h1>
+            <nav>
+                <a href="{% url 'dashboard' %}">Home</a> |
+                <a href="{% url 'add_store' %}">Add Store</a> |
+                <a href="{% url 'add_product' %}">Add Product</a> |
+                <a href="{% url 'transaction' %}">Issue/Receive Products</a> |
+                <a href="{% url 'manage_items' %}">Manage Items</a> |
+                <a href="{% url 'manage_stores' %}">Manage Stores</a> |
+                <a href="{% url 'logout' %}">Logout</a>
+            </nav>
+            
+        </div>
+    </header>
+    <div class="container">
+        <div class="welcome card">
+            <h2>Welcome to the Dashboard</h2>
+            <p>Hello, {{ user.username }}!</p>
+        </div>
+
+        <div class="products card">
+            <h2>Products</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Store Name</th>
+                        <th>Item Name</th>
+                        <th>Description</th>
+                        <th>Unit Price</th>
+                        <th>Quantity</th>
+                        <th>Total Price</th>
+                        <th>Remarks</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>{{ product.store.name }}</td>
+                        <td>{{ product.item_name }}</td>
+                        <td>{{ product.item_description }}</td>
+                        <td>{{ product.unit_price }}</td>
+                        <td>{{ product.quantity }}</td>
+                        <td>{{ product.total_price }}</td>
+                        <td>{{ product.remarks }}</td>
+                        <td>{{ product.date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row">
+            <div class="column transactions card">
+                <h2>Transactions</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Type</th>
+                            <th>Quantity</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in transactions %}
+                        <tr>
+                            <td>{{ transaction.product.item_name }}</td>
+                            <td>{{ transaction.transaction_type }}</td>
+                            <td>{{ transaction.quantity }}</td>
+                            <td>{{ transaction.date }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="column stores card">
+                <h2>Stores</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Store Name</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for store in stores %}
+                        <tr>
+                            <td>{{ store.name }}</td>
+                            <td>{{ store.location }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
