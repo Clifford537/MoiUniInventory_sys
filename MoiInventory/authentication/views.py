@@ -3,6 +3,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import RegisterForm
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 def register_view(request):
     if request.method == 'POST':
@@ -10,9 +11,10 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            request.session['user_logged_in'] = True  # Set session variable
             return redirect('login')
         else:
-            print(form.errors)  # Debug: print form errors to console
+            print(form.errors)
     else:
         form = RegisterForm()
     return render(request, 'register.html', {'form': form})
@@ -26,11 +28,11 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                request.session['user_logged_in'] = True  # Set session variable
                 return redirect('dashboard')
     else:
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
-
 
 @login_required
 def dashboard_view(request):
@@ -38,4 +40,10 @@ def dashboard_view(request):
 
 def logout_view(request):
     logout(request)
+    request.session['user_logged_in'] = False  # Clear session variable
     return redirect('login')
+
+@login_required
+def check_login_status(request):
+    is_logged_in = request.user.is_authenticated
+    return JsonResponse({'logged_in': is_logged_in})
