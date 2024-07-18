@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
+const { exec } = require('child_process');
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -53,7 +54,33 @@ function createNewWindow() {
   newWindow.loadURL('http://localhost:8000');
 }
 
-app.whenReady().then(createWindow);
+function startDjangoServer() {
+  const djangoServer = exec(path.join(__dirname, 'dist/DjangoApp/DjangoApp.exe runserver'), (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error starting Django server: ${error}`);
+      return;
+    }
+    console.log(`Django server stdout: ${stdout}`);
+    console.error(`Django server stderr: ${stderr}`);
+  });
+
+  djangoServer.stdout.on('data', (data) => {
+    console.log(`stdout: ${data}`);
+  });
+
+  djangoServer.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
+  });
+
+  djangoServer.on('close', (code) => {
+    console.log(`child process exited with code ${code}`);
+  });
+}
+
+app.whenReady().then(() => {
+  startDjangoServer();
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
