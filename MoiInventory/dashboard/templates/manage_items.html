@@ -144,10 +144,10 @@
         .filter-form button:hover {
             background-color: #c0a011;
         }
-    .pagination {
-        margin-top: 20px;
-        text-align: center;
-    }
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
 
         .pagination a {
             color: #c26e29;
@@ -168,6 +168,12 @@
             color: #fff;
             padding: 8px 16px;
             margin: 0 5px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Adjust gap as needed */
         }
     </style>
 </head>
@@ -225,8 +231,8 @@
                     <td>{{ product.total_price }}</td>
                     <td>{{ product.remarks }}</td>
                     <td>{{ product.date }}</td>
-                    <td>
-                        <a href="{% url 'edit_product' product.id %}" class="btn btn-primary btn-sm">Edit</a>
+                    <td class="actions">
+                        <a href="{% url 'edit_product' product.id %}" class="btn btn-primary btn-sm">Edit</a> 
                         <a href="{% url 'delete_product' product.id %}" class="btn btn-danger btn-sm">Delete</a>
                     </td>
                 </tr>
@@ -258,17 +264,12 @@
                 <a href="?page={{ products.next_page_number }}" class="page-link">Next</a>
                 <a href="?page={{ products.paginator.num_pages }}" class="page-link">Last &raquo;</a>
             {% endif %}
-        </div> 
+        </div>
     </div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
     <script>
-        // Initialize flatpickr for date picker
         flatpickr("#datePicker", {
-            dateFormat: "Y-m-d",
-            enableTime: false,
-            altInput: true,
-            altFormat: "F j, Y",
+            dateFormat: "Y-m-d"
         });
     </script>
 </body>
