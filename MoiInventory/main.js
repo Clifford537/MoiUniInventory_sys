@@ -2,39 +2,63 @@ const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const { exec } = require('child_process');
 
-function createWindow() {
-  const win = new BrowserWindow({
+let mainWindow;
+
+function createWindow () {
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      nodeIntegration: true,
+      contextIsolation: false,
     }
   });
 
-  win.loadURL('http://127.0.0.1:8000');
+  // Load your Django app URL (update to match your server URL)
+  mainWindow.loadURL('http://127.0.0.1:8000');
 
-  // Optional: Open the DevTools.
-  win.webContents.openDevTools()
+  mainWindow.on('closed', function () {
+    mainWindow = null;
+  });
 }
 
-app.whenReady().then(() => {
-  // Start the Django server
-  exec(path.join(__dirname, './dist/CMSInventory/CMSInventory.exe'), (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
-    }
-    console.log(`stdout: ${stdout}`);
-    console.error(`stderr: ${stderr}`);
+// Start the Django server
+function startDjangoServer() {
+  const server = exec(path.join(__dirname, 'dist/moiinventory.exe'));
+
+  server.stdout.on('data', function(data) {
+    console.log('stdout: ' + data.toString());
   });
 
+  server.stderr.on('data', function(data) {
+    console.log('stderr: ' + data.toString());
+  });
+
+  server.on('exit', function(code) {
+    console.log('child process exited with code ' + code.toString());
+  });
+
+  return server;
+}
+
+app.on('ready', () => {
+  const djangoServer = startDjangoServer();
   createWindow();
 
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  app.on('before-quit', () => {
+    // Stop the Django server when the Electron app is closed
+    djangoServer.kill();
   });
 });
 
 app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit();
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+
+app.on('activate', function () {
+  if (mainWindow === null) {
+    createWindow();
+  }
 });
