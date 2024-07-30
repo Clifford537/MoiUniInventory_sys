@@ -167,8 +167,9 @@ def product_movement_view(request):
 @login_required
 def charts_view(request):
     products = Product.objects.all()
-    broken_goods_count = products.filter(remarks__icontains='broken').count()
-    available_products_count = products.exclude(remarks__icontains='broken').count()
+    broken_goods_count = products.filter(remarks__icontains='broken').aggregate(Sum('quantity'))['quantity__sum'] or 0
+    total_product_quantity = products.aggregate(Sum('quantity'))['quantity__sum'] or 0
+    available_products_count = total_product_quantity - broken_goods_count
 
     product_names = [product.item_name for product in products]
     product_quantities = [product.quantity for product in products]
@@ -177,9 +178,8 @@ def charts_view(request):
     store_names = [store.name for store in stores]
     store_product_counts = [store.total_products for store in stores]
 
-    total_product_quantity = Product.objects.aggregate(Sum('quantity'))['quantity__sum'] or 0
-    total_product_amount = Product.objects.aggregate(Sum('total_price'))['total_price__sum'] or 0
-    total_product_amount = '{:,.3f}'.format(total_product_amount)  # Format with two decimal places and thousands separator
+    total_product_amount = products.aggregate(Sum('total_price'))['total_price__sum'] or 0
+    total_product_amount = '{:,.3f}'.format(total_product_amount)
 
     context = {
         'product_names': product_names,
@@ -188,10 +188,8 @@ def charts_view(request):
         'store_product_counts': store_product_counts,
         'total_product_quantity': total_product_quantity,
         'total_product_amount': total_product_amount,
-        'broken_goods_count': broken_goods_count,
+        'broken_quantity_count': broken_goods_count,
         'available_products_count': available_products_count,
     }
 
     return render(request, 'charts.html', context)
-
-
