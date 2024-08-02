@@ -4,6 +4,10 @@ from .models import Product, Transaction, Store
 from .forms import ProductForm, TransactionForm, StoreForm
 from django.db.models import Q, Sum, Count
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.conf import settings
+from django.http import HttpResponse
+import os
+import shutil
 
 @login_required
 def dashboard_view(request):
@@ -195,3 +199,17 @@ def analysis_view(request):
     }
 
     return render(request, 'analysis.html', context)
+
+@login_required
+def backup_database(request):
+    database_path = settings.DATABASES['default']['NAME']
+    backup_path = os.path.join(settings.MEDIA_ROOT, 'backup.sqlite3')
+
+    # Create a backup of the database
+    shutil.copyfile(database_path, backup_path)
+
+    # Send the backup file as a download
+    with open(backup_path, 'rb') as f:
+        response = HttpResponse(f.read(), content_type='application/x-sqlite3')
+        response['Content-Disposition'] = f'attachment; filename="backup.sqlite3"'
+        return response
