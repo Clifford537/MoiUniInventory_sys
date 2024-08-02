@@ -200,16 +200,19 @@ def analysis_view(request):
 
     return render(request, 'analysis.html', context)
 
+def backup_database_cron():
+    db_path = settings.DATABASES['default']['NAME']
+    backup_dir = os.path.join(settings.BASE_DIR, 'backups')
+    os.makedirs(backup_dir, exist_ok=True)
+    backup_path = os.path.join(backup_dir, 'backup.sqlite3')
+    with open(db_path, 'rb') as fsrc:
+        with open(backup_path, 'wb') as fdst:
+            fdst.write(fsrc.read())
+
 @login_required
 def backup_database(request):
-    database_path = settings.DATABASES['default']['NAME']
-    backup_path = os.path.join(settings.MEDIA_ROOT, 'backup.sqlite3')
-
-    # Create a backup of the database
-    shutil.copyfile(database_path, backup_path)
-
-    # Send the backup file as a download
-    with open(backup_path, 'rb') as f:
+    db_path = settings.DATABASES['default']['NAME']
+    with open(db_path, 'rb') as f:
         response = HttpResponse(f.read(), content_type='application/x-sqlite3')
-        response['Content-Disposition'] = f'attachment; filename="backup.sqlite3"'
+        response['Content-Disposition'] = 'attachment; filename="backup.sqlite3"'
         return response

@@ -14,4 +14,5 @@ urlpatterns = [
     path('edit_store/<int:store_id>/', views.edit_store_view, name='edit_store'),
     path('delete_store/<int:store_id>/', views.delete_store_view, name='delete_store'),
     path('analysis/',views.analysis_view, name='analysis'), 
+    path('backup/', views.backup_database, name='backup_database'),
 ]

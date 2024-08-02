@@ -41,6 +41,15 @@
         .summary span {
             font-weight: bold;
         }
+        .backup-button {
+            margin-top: 20px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #35424a;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -85,6 +94,7 @@
                     </tr>
                 </tbody>
             </table>
+            <a href="{% url 'backup_database' %}" class="backup-button">Download Database Backup</a>
         </div>
     </div><br> <br>
     {% endblock %}
