@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 95%;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 15px;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding: 20px 0;
+            border-bottom: #e8491d 3px solid;
+            border-radius: 5px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+            text-align: center;
+        }
+        nav {
+            float: right;
+        }
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            margin: 0 2px;
+            display: inline-block; 
+            background-color: rgb(102, 117, 95);
+            border-radius: 5px;
+            padding: 5px;
+            font-weight: bold;
+        }
+        nav a:hover {
+            color: #e8491d;
+        }
+        .welcome, .products, .transactions, .stores {
+            margin-top: 20px;
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        table, th, td {
+            border: 1px solid #dddddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #35424a;
+            color: white;
+        }
+        .row {
+            display: flex;
+            justify-content: space-between;
+        }
+        .column {
+            flex: 0 0 48%;
+            box-sizing: border-box;
+        }
+        .copyright-info {
+            max-width: 95%;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .copyright-info p {
+            margin-bottom: 10px;
+        }
+        .copyright-info a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .copyright-info a:hover {
+            text-decoration: underline;
+        }
+        .contact-info {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Inventory Manage</h1>
+            <nav>
+                <a href="{% url 'add_product' %}">Add Product</a>
+                <a href="{% url 'transaction' %}">Issue/Receive Products</a>
+                <a href="{% url 'product_movement' %}">Product Movement</a>
+                <a href="{% url 'manage_items' %}">Manage Items</a>
+                <a href="{% url 'manage_stores' %}">Manage Stores</a>
+                <a href="{% url 'analysis' %}">Analysis</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <div class="copyright-info">
+        <p>&copy; Cliffords Solution. By using this product, you accept the <a href="#">privacy policy</a>,<a href="#">terms and conditions</a>. For Inquiries Text, SMS, Call, or WhatsApp at <strong>+254 111920010</strong> or <strong>+254 101987974</strong>. For any help, contact  via email at <a href="mailto:cliffordmukosh@gail.com">cliffordmukosh@gail.com</a> or visit our <a href="https://clifford537.github.io/portfolio/">portfolio</a>.</p>
+        <p>Kreatives</p>
+    </div>
+</body>
+</html>

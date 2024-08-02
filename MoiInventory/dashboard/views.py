@@ -51,7 +51,7 @@ def add_store_view(request):
         form = StoreForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('dashboard')
+            return redirect('manage_stores')
     else:
         form = StoreForm()
     return render(request, 'add_store.html', {'form': form})
@@ -164,32 +164,34 @@ def product_movement_view(request):
 
     return render(request, 'product_movement.html', {'transactions': transactions})
 
+from django.shortcuts import render
+from django.db.models import Sum, F
+from .models import Product, Transaction
+
 @login_required
-def charts_view(request):
-    products = Product.objects.all()
-    broken_goods_count = products.filter(remarks__icontains='broken').aggregate(Sum('quantity'))['quantity__sum'] or 0
-    total_product_quantity = products.aggregate(Sum('quantity'))['quantity__sum'] or 0
-    available_products_count = total_product_quantity - broken_goods_count
+def analysis_view(request):
+    # Get data from the request, if available
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
 
-    product_names = [product.item_name for product in products]
-    product_quantities = [product.quantity for product in products]
+    # Build the query based on the date filters
+    transactions = Transaction.objects.all()
+    if start_date and end_date:
+        transactions = transactions.filter(date__range=[start_date, end_date])
 
-    stores = Store.objects.annotate(total_products=Count('products'))
-    store_names = [store.name for store in stores]
-    store_product_counts = [store.total_products for store in stores]
+    # Calculate totals
+    total_quantity = transactions.aggregate(total=Sum('quantity'))['total'] or 0
+    total_broken_quantity = transactions.aggregate(total=Sum('broken_quantity'))['total'] or 0
+    total_good_condition_quantity = transactions.aggregate(total=Sum(F('quantity') - F('broken_quantity')))['total'] or 0
+    total_products = Product.objects.count()
+    total_product_price = Product.objects.aggregate(total_price=Sum('total_price'))['total_price'] or 0
 
-    total_product_amount = products.aggregate(Sum('total_price'))['total_price__sum'] or 0
-    total_product_amount = '{:,.3f}'.format(total_product_amount)
-
+    # Prepare context
     context = {
-        'product_names': product_names,
-        'product_quantities': product_quantities,
-        'store_names': store_names,
-        'store_product_counts': store_product_counts,
-        'total_product_quantity': total_product_quantity,
-        'total_product_amount': total_product_amount,
-        'broken_quantity_count': broken_goods_count,
-        'available_products_count': available_products_count,
+        'total_quantity': total_quantity,
+        'total_broken_quantity': total_broken_quantity,
+        'total_good_condition_quantity': total_good_condition_quantity,
+        'total_product_price': total_product_price,
     }
 
-    return render(request, 'charts.html', context)
+    return render(request, 'analysis.html', context)

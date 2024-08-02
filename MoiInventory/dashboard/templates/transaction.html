@@ -1,34 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Issue/Receive Products</title>
+{% extends 'header.html' %}
+
+{% block title %}Issue/Receive Products{% endblock %}
+
+{% block content %}
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #35424a;
-            color: #ffffff;
-            text-align: center;
-            padding: 10px 0;
-            border-bottom: 3px solid #e8491d;
-        }
-        .container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        form {
-            margin-top: 20px;
-        }
+    form {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
         form label {
             display: block;
             margin-bottom: 8px;
@@ -66,7 +51,12 @@
         .conditional-fields {
             display: none;
         }
+        h2{
+            text-align: center;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
     </style>
+
     <script>
         function toggleFields() {
             var transactionType = document.getElementById('id_transaction_type').value;
@@ -83,11 +73,7 @@
             toggleFields();  // Ensure fields are correctly displayed on page load
         });
     </script>
-</head>
-<body>
-    <header>
-        <h1>Issue/Receive Products</h1>
-    </header>
+    <h2>Issue/Receive Items</h2>
     <div class="container">
         <form method="post">
             {% csrf_token %}
@@ -105,7 +91,5 @@
             {{ form.remarks }}
             <button type="submit">Submit</button>
         </form>
-        <a href="{% url 'dashboard' %}">Back to Dashboard</a>
     </div>
-</body>
-</html>
+{% endblock %}

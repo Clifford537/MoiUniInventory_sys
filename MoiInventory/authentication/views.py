@@ -4,6 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import RegisterForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.contrib import messages
 
 def register_view(request):
     if request.method == 'POST':
@@ -11,10 +12,12 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            messages.success(request, 'Registration successful! click the login button to continue.')
             request.session['user_logged_in'] = True  # Set session variable
-            return redirect('login')
+            return redirect('register')
         else:
-            print(form.errors)
+            for error in form.errors.values():
+                messages.error(request, error)
     else:
         form = RegisterForm()
     return render(request, 'register.html', {'form': form})
@@ -28,8 +31,11 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                messages.success(request, 'Login successful!')
                 request.session['user_logged_in'] = True  # Set session variable
                 return redirect('dashboard')
+        else:
+            messages.error(request, 'Invalid username or password.')
     else:
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
@@ -40,6 +46,7 @@ def dashboard_view(request):
 
 def logout_view(request):
     logout(request)
+    messages.info(request, 'You have been logged out.')
     request.session['user_logged_in'] = False  # Clear session variable
     return redirect('login')
 
@@ -47,3 +54,12 @@ def logout_view(request):
 def check_login_status(request):
     is_logged_in = request.user.is_authenticated
     return JsonResponse({'logged_in': is_logged_in})
+
+def require_login_message_middleware(get_response):
+    def middleware(request):
+        response = get_response(request)
+        if not request.user.is_authenticated and request.path != '/login/':
+            messages.warning(request, 'You are not logged in.')
+            return redirect('login')
+        return response
+    return middleware

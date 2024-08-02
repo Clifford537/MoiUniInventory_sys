@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis</title>
+    <style>
+        .content {
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        form {
+            margin-bottom: 10px;
+        }
+        form label {
+            margin-right: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid #dddddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #35424a;
+            color: white;
+        }
+        .summary {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .summary span {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    {% extends 'header.html' %}
+
+    {% block title %}Product Movement{% endblock %}
+    
+    {% block content %}
+    <div class="container">
+        <div class="content">
+            <h2>Product Analysis</h2>
+            <form method="get">
+                <label for="id_start_date">Start Date:</label>
+                <input type="date" id="id_start_date" name="start_date">
+                <label for="id_end_date">End Date:</label>
+                <input type="date" id="id_end_date" name="end_date">
+                <button type="submit">Filter</button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total Quantity</td>
+                        <td>{{ total_quantity }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Broken Quantity</td>
+                        <td>{{ total_broken_quantity }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Good Condition Quantity</td>
+                        <td>{{ total_good_condition_quantity }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Product Price</td>
+                        <td>{{ total_product_price|floatformat:3 }} Kes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div><br> <br>
+    {% endblock %}
+</body>
+</html>

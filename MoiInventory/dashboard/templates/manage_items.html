@@ -6,28 +6,7 @@
     <title>Manage Items</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.css">
     <style>
-        body {
-            background-color: #f4f4f4;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #35424a;
-            color: #ffffff;
-            padding: 20px;
-            text-align: center;
-            border-bottom: 3px solid #e8491d;
-        }
-        .container {
-            margin: 20px auto;
-            max-width: 1200px; /* Adjusted maximum width for the container */
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
+       h1 {
             margin: 0;
             padding: 10px 0;
         }
@@ -175,16 +154,20 @@
             justify-content: center;
             gap: 10px; /* Adjust gap as needed */
         }
+        h2{
+            text-align: center;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Manage Items</h1>
-    </header>
+    {% extends 'header.html' %}
+
+    {% block title %}Product Movement{% endblock %}
+    
+    {% block content %}
+    <h2>Manage items</h2><br><br>
     <div class="container">
-        <nav>
-            <a href="{% url 'dashboard' %}" class="btn-back">Back to Dashboard</a>
-        </nav>
         <div class="search-filter">
             <div class="search-form">
                 <form method="get">
@@ -264,8 +247,9 @@
                 <a href="?page={{ products.next_page_number }}" class="page-link">Next</a>
                 <a href="?page={{ products.paginator.num_pages }}" class="page-link">Last &raquo;</a>
             {% endif %}
-        </div>
+        </div> <br>
     </div>
+    {% endblock %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
     <script>
         flatpickr("#datePicker", {

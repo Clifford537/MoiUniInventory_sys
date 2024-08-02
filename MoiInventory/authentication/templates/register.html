@@ -35,7 +35,7 @@
         }
         header li {
             display: inline;
-            padding: 0 20px 0 20px;
+            padding: 0 20px;
         }
         header .current a {
             color: #e8491d;
@@ -80,9 +80,9 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            width: 100%; /* Make the button width 100% */
-            max-width: 150px; /* Limit the maximum width of the button */
-            margin: auto; /* Center align the button */
+            width: 100%;
+            max-width: 150px;
+            margin: auto;
         }
         .register-form form button:hover {
             background: #e8491d;
@@ -120,12 +120,80 @@
         .contact-info {
             margin-top: 20px;
         }
+        .messages {
+            margin: 10px 0;
+        }
+        .messages .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .messages .message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .messages .message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .messages .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            text-align: center;
+        }
+        .loading p {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #e8491d;
+            animation: bounce 0.6s infinite;
+        }
+        .dot:nth-child(2) {
+            background-color: #5fa9d6;
+            animation-delay: 0.2s;
+        }
+        .dot:nth-child(3) {
+            background-color: #34c759;
+            animation-delay: 0.4s;
+        }
+        @keyframes bounce {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.5);
+            }
+        }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <h1><a href="{% url 'dashboard' %}">Register </a></h1>
+            <h1><a href="{% url 'dashboard' %}">Register</a></h1>
             <ul>
                 <li><a href="{% url 'login' %}">Login</a></li>
                 <li class="current"><a href="{% url 'register' %}">Register</a></li>
@@ -134,7 +202,22 @@
     </header>
     <div class="register-form">
         <h2>Register</h2>
-        <form method="post">
+        <div class="messages">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="loading" id="loading">
+            <p>Please wait while we are setting up your account...</p>
+            <div class="dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+        <form method="post" id="register-form">
             {% csrf_token %}
             <label for="id_username">Username:</label>
             {{ form.username }}
@@ -151,8 +234,26 @@
         </div>
     </div>
     <div class="copyright-info">
-        <p>&copy; Cliffords Solution. By using this product, you accept the <a href="#">privacy policy</a>,<a href="#">terms and conditions</a>. For Inquiries Text, SMS, Call, or WhatsApp at <strong>+254 111920010</strong> or <strong>+254 101987974</strong>. For any help, contact  via email at <a href="mailto:cliffordmukosh@gail.com">cliffordmukosh@gail.com</a> or visit our <a href="https://clifford537.github.io/portfolio/">portfolio</a>.</p>
+        <p>&copy; Cliffords Solution. By using this product, you accept the <a href="#">privacy policy</a>,<a href="#">terms and conditions</a>. For Inquiries Text, SMS, Call, or WhatsApp at <strong>+254 111920010</strong> or <strong>+254 101987974</strong>. For any help, contact via email at <a href="mailto:cliffordmukosh@gail.com">cliffordmukosh@gail.com</a> or visit our <a href="https://clifford537.github.io/portfolio/">portfolio</a>.</p>
         <p>Kreatives</p>
     </div>
+    <script>
+        document.getElementById('register-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            
+            var loadingDiv = document.getElementById('loading');
+            loadingDiv.style.display = 'flex';
+
+            // Simulate form submission delay
+            setTimeout(function() {
+                var hasErrors = document.querySelectorAll('.form-errors').length > 0; // Adjust selector as needed
+                loadingDiv.style.display = 'none';
+                
+                if (!hasErrors) {
+                    document.getElementById('register-form').submit(); // Submit the form if no errors
+                }
+            }, 3000);
+        });
+    </script>
 </body>
 </html>
