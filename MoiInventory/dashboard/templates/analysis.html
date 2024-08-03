@@ -55,7 +55,7 @@
 <body>
     {% extends 'header.html' %}
 
-    {% block title %}Product Movement{% endblock %}
+    {% block title %}Product Analysis{% endblock %}
     
     {% block content %}
     <div class="container">
@@ -63,9 +63,9 @@
             <h2>Product Analysis</h2>
             <form method="get">
                 <label for="id_start_date">Start Date:</label>
-                <input type="date" id="id_start_date" name="start_date">
+                <input type="date" id="id_start_date" name="start_date" value="{{ request.GET.start_date }}">
                 <label for="id_end_date">End Date:</label>
-                <input type="date" id="id_end_date" name="end_date">
+                <input type="date" id="id_end_date" name="end_date" value="{{ request.GET.end_date }}">
                 <button type="submit">Filter</button>
             </form>
             <table>
@@ -77,8 +77,8 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Total Quantity</td>
-                        <td>{{ total_quantity }}</td>
+                        <td>Total Products</td>
+                        <td>{{ total_products }}</td>
                     </tr>
                     <tr>
                         <td>Total Broken Quantity</td>
@@ -87,6 +87,14 @@
                     <tr>
                         <td>Total Good Condition Quantity</td>
                         <td>{{ total_good_condition_quantity }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Issued Products</td>
+                        <td>{{ total_issued_products }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Received Products</td>
+                        <td>{{ total_received_products }}</td>
                     </tr>
                     <tr>
                         <td>Total Product Price</td>

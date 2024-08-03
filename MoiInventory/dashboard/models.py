@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 class Store(models.Model):
     name = models.CharField(max_length=255)
@@ -25,7 +26,6 @@ class Product(models.Model):
     def __str__(self):
         return f'{self.item_name} ({self.store.name})'
 
-from datetime import datetime
 
 class Transaction(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -35,6 +35,7 @@ class Transaction(models.Model):
     time = models.TimeField(auto_now_add=True)
     date = models.DateField(auto_now_add=True)
     remarks = models.TextField(blank=True, null=True)
+    received_quantity = models.PositiveIntegerField(default=0)  # Track quantity received
 
     def __str__(self):
         return f'{self.transaction_type} - {self.product.item_name} ({self.quantity})'

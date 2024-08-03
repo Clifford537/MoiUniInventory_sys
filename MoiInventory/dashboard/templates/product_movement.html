@@ -4,18 +4,6 @@
 
 {% block content %}
     <style>
- 
-        nav {
-            text-align: right;
-        }
-        nav a {
-            color: #ffffff;
-            text-decoration: none;
-            margin-left: 15px;
-        }
-        nav a:hover {
-            color: #e8491d;
-        }
         .content {
             background: #ffffff;
             padding: 20px;
@@ -65,6 +53,21 @@
             background-color: #35424a;
             color: white;
         }
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .pagination a {
+            color: #007bff;
+            padding: 10px 15px;
+            text-decoration: none;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+        }
+        .pagination a:hover {
+            background-color: #0056b3;
+            color: white;
+        }
     </style>
     <div class="container">
         <div class="content">
@@ -93,7 +96,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for transaction in transactions %}
+                    {% for transaction in page_obj %}
                     <tr>
                         <td>{{ transaction.product.item_name }}</td>
                         <td>{{ transaction.transaction_type }}</td>
@@ -103,9 +106,24 @@
                         <td>{{ transaction.time }}</td>
                         <td>{{ transaction.date }}</td>
                     </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">No transactions found.</td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?{% if request.GET.page %}page={{ page_obj.previous_page_number }}{% else %}page=1{% endif %}">&laquo; Previous</a>
+                    {% endif %}
+
+                    {% if page_obj.has_next %}
+                        <a href="?{% if request.GET.page %}page={{ page_obj.next_page_number }}{% else %}page={{ page_obj.paginator.num_pages }}{% endif %}">Next &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
         </div>
     </div>
 {% endblock %}

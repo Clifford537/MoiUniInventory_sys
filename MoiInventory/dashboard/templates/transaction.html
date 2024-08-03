@@ -3,94 +3,110 @@
 {% block title %}Issue/Receive Products{% endblock %}
 
 {% block content %}
-    <style>
-        form {
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            font-size: 19px;
-        }
-        form label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-        form input[type="text"], form input[type="number"], form textarea, form select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        form button {
-            background-color: #007bff;
-            color: #ffffff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        form button:hover {
-            background-color: #0056b3;
-        }
-        a {
-            display: inline-block;
-            margin-top: 10px;
-            color: #007bff;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .conditional-fields {
-            display: none;
-        }
-        h2 {
-            text-align: center;
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-        }
-    </style>
+<style>
+    form {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        font-size: 19px;
+    }
+    form label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+    form input[type="text"], form input[type="number"], form textarea, form select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    form button {
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    form button:hover {
+        background-color: #0056b3;
+    }
+    a {
+        display: inline-block;
+        margin-top: 10px;
+        color: #007bff;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    .conditional-fields {
+        display: none;
+    }
+    h2 {
+        text-align: center;
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    }
+    .error-message {
+        color: red;
+        font-size: 14px;
+    }
+</style>
 
-    <script>
-        function toggleFields() {
-            var transactionType = document.getElementById('id_transaction_type').value;
-            var conditionalFields = document.querySelector('.conditional-fields');
-            if (transactionType === 'receive') {
-                conditionalFields.style.display = 'block';
-            } else {
-                conditionalFields.style.display = 'none';
-            }
+<script>
+    function toggleFields() {
+        var transactionType = document.getElementById('id_transaction_type').value;
+        var conditionalFields = document.querySelector('.conditional-fields');
+        if (transactionType === 'receive') {
+            conditionalFields.style.display = 'block';
+        } else {
+            conditionalFields.style.display = 'none';
         }
-        document.addEventListener('DOMContentLoaded', function() {
-            var transactionTypeSelect = document.getElementById('id_transaction_type');
-            transactionTypeSelect.addEventListener('change', toggleFields);
-            toggleFields();  // Ensure fields are correctly displayed on page load
-        });
-    </script>
-    <h2>Issue/Receive Items</h2>
-    <div class="container">
-        <form method="post">
-            {% csrf_token %}
-            {{ form.non_field_errors }}
-            <label for="id_product">Product:</label>
-            {{ form.product }}
-            <label for="id_transaction_type">Transaction Type:</label>
-            {{ form.transaction_type }}
-            <label for="id_quantity">Quantity:</label>
-            {{ form.quantity }}
-            <div class="conditional-fields">
-                <label for="id_broken_quantity">Broken Quantity:</label>
-                {{ form.broken_quantity }}
-            </div>
-            <label for="id_remarks">Remarks:</label>
-            {{ form.remarks }}
-            <button type="submit">Submit</button>
-        </form>
-    </div>
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        var transactionTypeSelect = document.getElementById('id_transaction_type');
+        transactionTypeSelect.addEventListener('change', toggleFields);
+        toggleFields();  // Ensure fields are correctly displayed on page load
+    });
+</script>
+
+<h2>Issue/Receive Items</h2>
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <label for="id_product">Product:</label>
+        {{ form.product.errors }}
+        {{ form.product }}
+
+        <label for="id_transaction_type">Transaction Type:</label>
+        {{ form.transaction_type.errors }}
+        {{ form.transaction_type }}
+
+        <label for="id_quantity">Quantity:</label>
+        {{ form.quantity.errors }}
+        {{ form.quantity }}
+
+        <div class="conditional-fields">
+            <label for="id_broken_quantity">Broken Quantity:</label>
+            {{ form.broken_quantity.errors }}
+            {{ form.broken_quantity }}
+        </div>
+
+        <label for="id_remarks">Remarks:</label>
+        {{ form.remarks.errors }}
+        {{ form.remarks }}
+
+        <button type="submit">Submit</button>
+    </form>
+</div>
 {% endblock %}

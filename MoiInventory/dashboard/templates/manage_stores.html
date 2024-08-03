@@ -106,6 +106,7 @@
                     <td>{{ store.location }}</td>
                     <td>
                         <a href="{% url 'edit_store' store.id %}" class="btn btn-primary">Edit</a>
+                        <a href="{% url 'delete_store' store.id %}" class="btn btn-danger">Delete</a>
                     </td>
                 </tr>
                 {% endfor %}

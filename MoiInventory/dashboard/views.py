@@ -11,14 +11,21 @@ import shutil
 
 @login_required
 def dashboard_view(request):
+    # Retrieve the latest 15 products, sorted by date (latest first)
     products = Product.objects.order_by('-date')[:15]
-    transactions = Transaction.objects.order_by('-date')[:15]
+
+    # Retrieve the latest 15 transactions, sorted by date and time (latest first)
+    transactions = Transaction.objects.order_by('-date', '-time')[:15]
+
+    # Retrieve all stores
     stores = Store.objects.all()
+
     return render(request, 'dashboard.html', {
         'products': products,
         'transactions': transactions,
-        'stores': stores
+        'stores': stores,
     })
+
 
 @login_required
 def add_product_view(request):
@@ -38,15 +45,46 @@ def transaction_view(request):
         if form.is_valid():
             transaction = form.save(commit=False)
             product = transaction.product
-            if transaction.transaction_type == 'issue' and product.quantity >= transaction.quantity:
-                product.quantity -= transaction.quantity
+
+            if transaction.transaction_type == 'issue':
+                if product.quantity >= transaction.quantity:
+                    product.quantity -= transaction.quantity
+                    product.save()  # Save product after issuing
+                    transaction.save()  # Save issued transaction
+                    return redirect('dashboard')
+                else:
+                    available_quantity = product.quantity
+                    form.add_error('quantity', f'Issued quantity exceeds available quantity. Available quantity is {available_quantity}.')
+
             elif transaction.transaction_type == 'receive':
-                product.quantity += transaction.quantity
-            product.save()
-            transaction.save()
-            return redirect('dashboard')
+                issued_quantity = Transaction.objects.filter(
+                    product=product,
+                    transaction_type='issue'
+                ).aggregate(
+                    issued_quantity=Sum('quantity')
+                )['issued_quantity'] or 0
+
+                received_quantity = Transaction.objects.filter(
+                    product=product,
+                    transaction_type='receive'
+                ).aggregate(
+                    received_quantity=Sum('quantity')
+                )['received_quantity'] or 0
+
+                total_received = received_quantity + transaction.quantity
+
+                if total_received <= issued_quantity:
+                    product.quantity += transaction.quantity
+                    product.save()  # Save product after receiving
+                    transaction.save()  # Save received transaction
+                    return redirect('dashboard')
+                else:
+                    remaining = issued_quantity - received_quantity
+                    form.add_error('quantity', f'Received quantity cannot exceed issued quantity. You can only receive up to {remaining} more.')
+
     else:
         form = TransactionForm()
+
     return render(request, 'transaction.html', {'form': form})
 
 @login_required
@@ -59,6 +97,7 @@ def add_store_view(request):
     else:
         form = StoreForm()
     return render(request, 'add_store.html', {'form': form})
+
 
 @login_required
 def manage_items_view(request):
@@ -146,6 +185,7 @@ def delete_store_view(request, store_id):
     store.delete()
     return redirect('manage_stores')
 
+@login_required
 def product_movement_view(request):
     # Retrieve transactions and optionally filter by date and time
     start_date = request.GET.get('start_date')
@@ -164,13 +204,15 @@ def product_movement_view(request):
     if end_time:
         transactions = transactions.filter(time__lte=end_time)
 
-    transactions = transactions.order_by('-date')[:15]  # Limit to 15 most recent
+    transactions = transactions.order_by('-date', '-time')  # Sort by latest date and time
 
-    return render(request, 'product_movement.html', {'transactions': transactions})
+    # Pagination
+    paginator = Paginator(transactions, 10)  # Show 10 transactions per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
-from django.shortcuts import render
-from django.db.models import Sum, F
-from .models import Product, Transaction
+    return render(request, 'product_movement.html', {'page_obj': page_obj})
+
 
 @login_required
 def analysis_view(request):
@@ -184,30 +226,31 @@ def analysis_view(request):
         transactions = transactions.filter(date__range=[start_date, end_date])
 
     # Calculate totals
-    total_quantity = transactions.aggregate(total=Sum('quantity'))['total'] or 0
+    total_products = Product.objects.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
     total_broken_quantity = transactions.aggregate(total=Sum('broken_quantity'))['total'] or 0
-    total_good_condition_quantity = transactions.aggregate(total=Sum(F('quantity') - F('broken_quantity')))['total'] or 0
-    total_products = Product.objects.count()
+    total_good_condition_quantity = total_products - total_broken_quantity
+
+    # Calculate issued and received quantities
+    issued_transactions = transactions.filter(transaction_type='issue')
+    total_issued_products = issued_transactions.aggregate(total=Sum('quantity'))['total'] or 0
+
+    received_transactions = transactions.filter(transaction_type='receive')
+    total_received_products = received_transactions.aggregate(total=Sum('quantity'))['total'] or 0
+
     total_product_price = Product.objects.aggregate(total_price=Sum('total_price'))['total_price'] or 0
 
     # Prepare context
     context = {
-        'total_quantity': total_quantity,
+        'total_products': total_products,
         'total_broken_quantity': total_broken_quantity,
         'total_good_condition_quantity': total_good_condition_quantity,
+        'total_issued_products': total_issued_products,
+        'total_received_products': total_received_products,
         'total_product_price': total_product_price,
     }
 
     return render(request, 'analysis.html', context)
 
-def backup_database_cron():
-    db_path = settings.DATABASES['default']['NAME']
-    backup_dir = os.path.join(settings.BASE_DIR, 'backups')
-    os.makedirs(backup_dir, exist_ok=True)
-    backup_path = os.path.join(backup_dir, 'backup.sqlite3')
-    with open(db_path, 'rb') as fsrc:
-        with open(backup_path, 'wb') as fdst:
-            fdst.write(fsrc.read())
 
 @login_required
 def backup_database(request):
