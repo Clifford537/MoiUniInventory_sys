@@ -121,7 +121,7 @@
     <div class="container">
         <div class="welcome card">
             <h2>Welcome to the Dashboard</h2>
-            <p>Hello, {{ user.username }}!</p>
+            <p>Hello, {{ user.username }}! <small style="color:rgb(231, 95, 95);">  after working create a monthly  backup <b><a href="{% url 'analysis' %}" class="backup-button" style="color: green;">Click here</a></b> to create a backup</small></p>
         </div>
 
         <div class="products card">
